@@ -2,6 +2,7 @@ package com.app.banking.model;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -26,28 +27,30 @@ public class AppUser {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
-    private Set<String> roles;
+    private Set<String> roles = new HashSet<>();
 
+    @Column(nullable = false, updatable = false)
     private Instant created_at;
+
+    @Column(nullable = false)
     private String passwordHash;
 
-    public User(Long id, String fName, String lName, String email, Set<String> roles, Instant created_at, String passwordHash) {
-        Id = id;
+    public AppUser(String fName, String lName, String email, Set<String> roles, String passwordHash) {
         this.fName = fName;
         this.lName = lName;
         this.email = email;
         this.roles = roles;
-        this.created_at = created_at;
+        this.created_at = Instant.now();
         this.passwordHash = passwordHash;
     }
 
-    public User() {
+    protected AppUser() {
+
     }
 
     public String getPasswordHash() {
         return passwordHash;
     }
-
 
     public void setfName(String fName) {
         this.fName = fName;
@@ -61,6 +64,8 @@ public class AppUser {
         this.email = email;
     }
 
+    public Long getId() {return Id;}
+
     public String getfName() {
         return fName;
     }
@@ -73,11 +78,11 @@ public class AppUser {
         return email;
     }
 
-    public String[] getRoles() {
+    public Set<String> getRoles() {
         return roles;
     }
 
-    public Integer getCreated_at() {
+    public Instant getCreatedAt() {
         return created_at;
     }
 
