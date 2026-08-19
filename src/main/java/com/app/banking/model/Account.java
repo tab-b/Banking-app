@@ -1,5 +1,8 @@
 package com.app.banking.model;
 
+import com.app.banking.exceptions.AccountNotActiveException;
+import com.app.banking.exceptions.InsufficientFundsException;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -36,6 +39,10 @@ public class Account {
         return status;
     }
 
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
     public Long getCustomerId() {
         return customerId;
     }
@@ -49,6 +56,8 @@ public class Account {
     }
 
     public void withdraw(BigDecimal amount) {
+        if(isActive() == false) throw new AccountNotActiveException(accountNumber);
+        if(balance.compareTo(amount) < 0) throw new InsufficientFundsException();
         balance = balance.subtract(amount);
     }
 
