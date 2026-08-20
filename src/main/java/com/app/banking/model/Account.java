@@ -2,6 +2,8 @@ package com.app.banking.model;
 
 import com.app.banking.exceptions.AccountNotActiveException;
 import com.app.banking.exceptions.InsufficientFundsException;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,7 +12,11 @@ public class Account {
     private AccountType type;
     private String accountNumber;
     private Status status;
-    private Long customerId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private AppUser owner;
+
     private LocalDate openingDate;
     private LocalDate closingDate;
     private BigDecimal balance;
@@ -43,8 +49,8 @@ public class Account {
         return status == Status.ACTIVE;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public AppUser getOwner() {
+        return owner;
     }
 
     public LocalDate getOpeningDate() {

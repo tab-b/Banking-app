@@ -2,7 +2,9 @@ package com.app.banking.model;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -13,7 +15,7 @@ import java.util.Set;
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(nullable = false)
     private String fName;
@@ -35,13 +37,17 @@ public class AppUser {
     @Column(nullable = false)
     private String passwordHash;
 
-    public AppUser(String fName, String lName, String email, Set<String> roles, String passwordHash) {
+    @OneToMany(mappedBy = "owner")
+    private List<Account> accounts = new ArrayList<>();
+
+    public AppUser(String fName, String lName, String email, Set<String> roles, String passwordHash, List<Account> accounts) {
         this.fName = fName;
         this.lName = lName;
         this.email = email;
         this.roles = roles;
         this.created_at = Instant.now();
         this.passwordHash = passwordHash;
+        this.accounts = accounts;
     }
 
     protected AppUser() {
@@ -64,7 +70,7 @@ public class AppUser {
         this.email = email;
     }
 
-    public Long getId() {return Id;}
+    public Long getId() {return id;}
 
     public String getfName() {
         return fName;

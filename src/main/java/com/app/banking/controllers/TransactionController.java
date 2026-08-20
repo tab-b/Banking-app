@@ -14,8 +14,6 @@ import java.math.BigDecimal;
 public class TransactionController {
     private final TransactionService tranService;
 
-    protected TransactionController() {}
-
     public TransactionController(TransactionService tService) {
         tranService = tService;
     }

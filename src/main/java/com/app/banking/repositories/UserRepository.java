@@ -9,18 +9,8 @@ import java.util.Optional;
 
 
 public interface UserRepository extends JpaRepository<AppUser, Long> {
-    @NativeQuery(value = """
-            SELECT 1
-            FROM users
-            WHERE email = :email""")
-    Optional<AppUser> getUserByEmail(@Param("email") String email);
 
-    @NativeQuery(value = """
-        SELECT EXISTS (
-            SELECT 1
-            FROM users
-            WHERE email = :email
-        )
-    """)
-    boolean existsByEmail(@Param("email") String email);
+    Optional<AppUser> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

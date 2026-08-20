@@ -1,10 +1,14 @@
 package com.app.banking.services;
 
 import com.app.banking.dto.CreateUserRequest;
+import com.app.banking.model.Account;
 import com.app.banking.model.AppUser;
 import com.app.banking.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,7 +23,7 @@ public class UserService {
     }
 
     public Optional<AppUser> getUserByEmail(String email) {
-        return userRepo.getUserByEmail(email);
+        return userRepo.findByEmail(email);
     }
 
     public AppUser createUser(CreateUserRequest request) {
@@ -33,7 +37,8 @@ public class UserService {
                 request.lastName().trim(),
                 normalizedEmail,
                 Set.of("ROLE_USER"),
-                passwordEncoder.encode(request.password())
+                passwordEncoder.encode(request.password()),
+                new ArrayList<Account>()
         );
         return userRepo.save(newUser);
     }
