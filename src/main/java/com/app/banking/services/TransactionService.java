@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.nio.channels.AcceptPendingException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TransactionService {
@@ -46,8 +47,9 @@ public class TransactionService {
         accountRepo.save(to);
 
         // Record transactions
-        Transaction fromTransaction = new Transaction(fromAccountNumber, toAccountNumber, amount.negate(), TransactionType.TRANSFER);
-        Transaction toTransaction = new Transaction(fromAccountNumber, toAccountNumber, amount, TransactionType.TRANSFER);
+        UUID transactionID = UUID.randomUUID();
+        Transaction fromTransaction = new Transaction(transactionID, fromAccountNumber, toAccountNumber, amount.negate(), TransactionType.TRANSFER);
+        Transaction toTransaction = new Transaction(transactionID, fromAccountNumber, toAccountNumber, amount, TransactionType.TRANSFER);
         tranRepo.saveAll(Arrays.asList(fromTransaction, toTransaction));
     }
 }
