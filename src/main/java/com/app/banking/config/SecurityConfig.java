@@ -23,7 +23,11 @@ public class SecurityConfig {
                 .requestMatchers("/accounts/**").authenticated()
                 .requestMatchers("/transactions/**").authenticated()
                 .anyRequest().authenticated()
-        );
+        )
+        .logout(logout -> logout
+                .logoutUrl("/auth/logout")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true));
         return http.build();
     }
 

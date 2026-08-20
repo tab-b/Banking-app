@@ -32,7 +32,7 @@ public class AppUser {
     private Set<String> roles = new HashSet<>();
 
     @Column(nullable = false, updatable = false)
-    private Instant created_at;
+    private Instant createdAt;
 
     @Column(nullable = false)
     private String passwordHash;
@@ -45,7 +45,7 @@ public class AppUser {
         this.lName = lName;
         this.email = email;
         this.roles = roles;
-        this.created_at = Instant.now();
+        this.createdAt = Instant.now();
         this.passwordHash = passwordHash;
         this.accounts = accounts;
     }
@@ -89,7 +89,7 @@ public class AppUser {
     }
 
     public Instant getCreatedAt() {
-        return created_at;
+        return createdAt;
     }
 
 }

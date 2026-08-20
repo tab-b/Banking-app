@@ -2,6 +2,7 @@ package com.app.banking.model;
 
 import com.app.banking.exceptions.AccountNotActiveException;
 import com.app.banking.exceptions.InsufficientFundsException;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
@@ -13,8 +14,8 @@ public class Account {
     private String accountNumber;
     private Status status;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private AppUser owner;
 
     private LocalDate openingDate;

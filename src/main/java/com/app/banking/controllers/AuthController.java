@@ -4,10 +4,18 @@ import com.app.banking.dto.LoginRequest;
 import com.app.banking.dto.UserResponse;
 import com.app.banking.model.AppUser;
 import com.app.banking.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -17,10 +25,17 @@ import java.net.URI;
 public class AuthController {
     private final UserService userServ;
     private final AuthenticationManager authManager;
+    private final SecurityContextRepository securityContextRepository;
 
-    public AuthController(UserService u, AuthenticationManager aManager) {
+    public AuthController(UserService u, AuthenticationManager aManager, SecurityContextRepository securityContextRepository) {
         userServ = u;
         authManager = aManager;
+        this.securityContextRepository = securityContextRepository;
+    }
+
+    @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
     }
 
     @PostMapping("/register")
@@ -32,13 +47,27 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @RequestBody LoginRequest request) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()
-                )
+    public ResponseEntity<Void> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
+
+        Authentication authentication =
+                authManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                request.email(),
+                                request.password()
+                        )
+                );
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        securityContextRepository.saveContext(
+                context,
+                httpRequest,
+                httpResponse
         );
-        return "Login successful";
+        return ResponseEntity.ok().build();
     }
 }
