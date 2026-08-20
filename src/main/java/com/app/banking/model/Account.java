@@ -2,32 +2,54 @@ package com.app.banking.model;
 
 import com.app.banking.exceptions.AccountNotActiveException;
 import com.app.banking.exceptions.InsufficientFundsException;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Entity
 public class Account {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private AccountType type;
+
+    @Column(nullable = false, unique = true)
     private String accountNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser owner;
 
+    @Column(nullable = false)
     private LocalDate openingDate;
+
     private LocalDate closingDate;
+
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
 
     protected Account() {}
-    public Account(BigDecimal balance, AccountType type, String accountNumber, Status status) {
-        this.balance = balance;
+
+    public Account(AccountType type, String accountNumber, AppUser owner) {
+        this.balance = BigDecimal.ZERO;
         this.type = type;
         this.accountNumber = accountNumber;
-        this.status = status;
+        this.owner = owner;
+        status = Status.ACTIVE;
+        openingDate = LocalDate.now();
+
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public AccountType getType() {
@@ -63,13 +85,36 @@ public class Account {
     }
 
     public void withdraw(BigDecimal amount) {
-        if(isActive() == false) throw new AccountNotActiveException(accountNumber);
+        if(amount == null || amount.signum() <= 0) throw new IllegalArgumentException("Withdrawal amount must be positive");
+        if(!isActive()) throw new AccountNotActiveException(accountNumber);
         if(balance.compareTo(amount) < 0) throw new InsufficientFundsException();
+
         balance = balance.subtract(amount);
     }
 
     public void deposit(BigDecimal amount) {
+        if(!isActive()) throw new AccountNotActiveException(accountNumber);
+        if(amount == null || amount.signum() <= 0) throw new IllegalArgumentException("Deposit amount must be positive!");
+
         balance = balance.add(amount);
+    }
+    public void close() {
+        if(status == Status.CLOSED) return;
+
+        status = Status.CLOSED;
+        closingDate = LocalDate.now();
+    }
+
+    public void suspend() {
+        if(status == Status.CLOSED) throw new IllegalStateException("Closed account cannot be suspended");
+
+        status = Status.SUSPENDED;
+    }
+
+    public void activate() {
+        if(status == Status.CLOSED) throw new IllegalStateException("Closed account cannot be activated");
+
+        status = Status.ACTIVE;
     }
 
 }
