@@ -1,4 +1,5 @@
 package com.app.banking.controllers;
+
 import com.app.banking.dto.CreateUserRequest;
 import com.app.banking.dto.LoginRequest;
 import com.app.banking.dto.UserResponse;
@@ -33,11 +34,6 @@ public class AuthController {
         this.securityContextRepository = securityContextRepository;
     }
 
-    @Bean
-    public SecurityContextRepository securityContextRepository() {
-        return new HttpSessionSecurityContextRepository();
-    }
-
     @PostMapping("/register")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
         AppUser createdUser = userServ.createUser(request);
@@ -63,6 +59,7 @@ public class AuthController {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
+
         securityContextRepository.saveContext(
                 context,
                 httpRequest,
