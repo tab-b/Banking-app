@@ -31,7 +31,6 @@ public class UserService {
         if(userRepo.existsByEmail(normalizedEmail)) {
             throw new IllegalArgumentException("Account with this email already exists");
         }
-
         AppUser newUser = new AppUser(
                 request.firstName().trim(),
                 request.lastName().trim(),

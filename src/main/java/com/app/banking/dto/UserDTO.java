@@ -5,7 +5,7 @@ import com.app.banking.model.AppUser;
 import java.time.Instant;
 import java.util.Set;
 
-public record UserResponse(
+public record UserDTO(
         Long id,
         String firstName,
         String lastName,
@@ -13,8 +13,8 @@ public record UserResponse(
         Set<String> roles,
         Instant createdAt
 ) {
-    public static UserResponse from(AppUser user) {
-        return new UserResponse(
+    public static UserDTO from(AppUser user) {
+        return new UserDTO(
                 user.getId(),
                 user.getfName(),
                 user.getlName(),

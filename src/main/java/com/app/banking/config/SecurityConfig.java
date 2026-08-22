@@ -2,6 +2,7 @@ package com.app.banking.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,8 +10,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -26,16 +30,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain secFilterChain(HttpSecurity http) {
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll() // anyone
-                .requestMatchers("/accounts/**").authenticated()
-                .requestMatchers("/transactions/**").authenticated()
-                .anyRequest().authenticated()
-        )
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/auth/**").permitAll() // anyone
+                    .requestMatchers("/accounts/**").authenticated()
+                    .requestMatchers("/transactions/**").authenticated()
+                    .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
         .logout(logout -> logout
                 .logoutUrl("/auth/logout")
                 .invalidateHttpSession(true)
-                .clearAuthentication(true));
+                .clearAuthentication(true)
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
+                );
         return http.build();
     }
 

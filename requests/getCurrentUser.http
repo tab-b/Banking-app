@@ -1,0 +1,32 @@
+### Register
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "john",
+  "lastName": "doh",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+
+### Login
+
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+
+### Get current user
+
+GET http://localhost:8080/users/me
+
+
+### Logout
+
+POST http://localhost:8080/auth/logout
