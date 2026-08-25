@@ -27,7 +27,7 @@ public class AccountController {
         accountService = aServ;
     }
 
-    @PostMapping
+    @PostMapping("/create-account")
     @PreAuthorize("hasRole('USER')")
     public AccountDTO createAccount(@Valid @RequestBody CreateAccountRequest request) {
         return AccountDTO.from(
@@ -36,12 +36,15 @@ public class AccountController {
     }
 
     @GetMapping
-    public List<Account> getAllAccounts() {
-        return accountService.getAccountsForCurrentUser();
+    public List<AccountDTO> getAllAccounts() {
+        return accountService.getAccountsForCurrentUser()
+                .stream()
+                .map(AccountDTO::from)
+                .toList();
     }
 
     @GetMapping("/{accountNumber}")
-    public Account getAccount(@PathVariable String accountNumber) {
-        return accountService.getAccount(accountNumber);
+    public AccountDTO getAccount(@PathVariable String accountNumber) {
+        return AccountDTO.from(accountService.getAccount(accountNumber));
     }
 }

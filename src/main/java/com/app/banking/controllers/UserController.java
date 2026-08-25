@@ -29,10 +29,6 @@ public class UserController {
 
     @GetMapping("/me")
     public UserDTO getCurrentUserDetails() {
-        SecurityContext currentContext = SecurityContextHolder.getContext();
-        Authentication currentAuth = currentContext.getAuthentication();
-        String email = currentAuth.getName();
-        AppUser currentUser = userServ.getUserByEmail(email).orElseThrow(() -> new NoSuchElementException());
-        return UserDTO.from(currentUser);
+        return UserDTO.from(userServ.getCurrentUser());
     }
 }
