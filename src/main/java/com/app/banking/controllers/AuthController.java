@@ -34,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody Cr eateUserRequest request) {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserRequest request) {
         AppUser createdUser = userServ.createUser(request);
         URI location = URI.create("/users/" + createdUser.getId());
 
