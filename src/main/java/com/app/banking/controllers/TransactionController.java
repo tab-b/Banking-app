@@ -1,6 +1,8 @@
 package com.app.banking.controllers;
 
+import com.app.banking.dto.TransferRequest;
 import com.app.banking.model.Transaction;
+import com.app.banking.repositories.TransactionRepository;
 import com.app.banking.services.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,10 +21,8 @@ public class TransactionController {
     }
 
     public ResponseEntity<Void> transfer(
-            @RequestParam String from,
-            @RequestParam String to,
-            @RequestParam BigDecimal amount) {
-        tranService.transfer(from, to, amount);
+            @RequestParam TransferRequest request) {
+        tranService.transfer(request);
         return ResponseEntity.ok().build();
     }
 }
