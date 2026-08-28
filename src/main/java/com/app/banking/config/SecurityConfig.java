@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -31,15 +31,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain secFilterChain(HttpSecurity http) {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/**").permitAll() // anyone
+                    .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/csrf").permitAll()
                     .requestMatchers("/accounts/**").authenticated()
+                        .requestMatchers("/error").permitAll()
                     .requestMatchers("/transactions/**").authenticated()
                     .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                )
         .logout(logout -> logout
                 .logoutUrl("/auth/logout")
                 .invalidateHttpSession(true)

@@ -41,7 +41,7 @@ public class UserService {
     public AppUser createUser(CreateUserRequest request) {
         String normalizedEmail = request.email().trim().toLowerCase();
         if(userRepo.existsByEmail(normalizedEmail)) {
-            throw new IllegalArgumentException("Account with this email already exists");
+            throw new EmailAlreadyExists("Account with this email already exists!");
         }
         AppUser newUser = new AppUser(
                 request.firstName().trim(),

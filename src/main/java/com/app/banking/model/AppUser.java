@@ -51,18 +51,17 @@ public class AppUser {
     }
 
     protected AppUser() {
-
     }
 
     public String getPasswordHash() {
         return passwordHash;
     }
 
-    public void setfName(String fName) {
+    public void setfirstName(String fName) {
         this.fName = fName;
     }
 
-    public void setlName(String lName) {
+    public void setlastName(String lName) {
         this.lName = lName;
     }
 
@@ -70,13 +69,17 @@ public class AppUser {
         this.email = email;
     }
 
+    public void addAccount(Account acc) {
+        accounts.add(acc);
+    }
+
     public Long getId() {return id;}
 
-    public String getfName() {
+    public String getfirstName() {
         return fName;
     }
 
-    public String getlName() {
+    public String getlastName() {
         return lName;
     }
 

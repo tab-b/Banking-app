@@ -24,15 +24,14 @@ public class AccountService {
 
     public Account createAccount(CreateAccountRequest request) {
         AppUser currentUser = userService.getCurrentUser();
-
         String accountNumber = accountNumberServ.generateUnique();
-
         Account account = new Account(
                 request.type(),
                 accountNumber,
                 currentUser
         );
 
+        currentUser.addAccount(account);
         return accountRepo.save(account);
     }
 

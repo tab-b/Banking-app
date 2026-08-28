@@ -36,6 +36,9 @@ public class Account {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
 
+    @Version
+    private Long version;
+
     protected Account() {}
 
     public Account(AccountType type, String accountNumber, AppUser owner) {
@@ -117,4 +120,11 @@ public class Account {
         status = Status.ACTIVE;
     }
 
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 }

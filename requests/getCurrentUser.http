@@ -1,24 +1,42 @@
+### Get CSRF
+GET http://localhost:8080/csrf
+
+> {%
+    client.global.set("csrf_token", response.body.token);
+%}
+
 ### Register
 
 POST http://localhost:8080/auth/register
 Content-Type: application/json
+X-XSRF-TOKEN: {{csrf_token}}
 
 {
-  "firstName": "teb",
-  "lastName": "toob",
-  "email": "test2@example.com",
-  "password": "password1234"
+  "firstName": "john",
+  "lastName": "doe",
+  "email": "doe@example.com",
+  "password": "password123456"
 }
 
-
-### Login
+### Login without CSRF
 
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "test@example.com",
-  "password": "password123"
+  "email": "doe@example.com",
+  "password": "password123456"
+}
+
+### Login WITH CSRF
+
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+X-XSRF-TOKEN: {{csrf_token}}
+
+{
+  "email": "doe@example.com",
+  "password": "password123456"
 }
 
 
@@ -30,3 +48,4 @@ GET http://localhost:8080/users/me
 ### Logout
 
 POST http://localhost:8080/auth/logout
+X-XSRF-TOKEN: {{csrf_token}}

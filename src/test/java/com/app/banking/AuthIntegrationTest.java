@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,11 +23,34 @@ public class AuthIntegrationTest {
     @Autowired
     private RestTestClient client;
 
+     private EntityExchangeResult<CsrfDTO> getCsrfToken() {
+        var token = client.get()
+                .uri("/csrf")
+                .exchange()
+                .returnResult(CsrfDTO.class);
+//         System.out.println("CSRF token: " + token.getResponseBody().token());
+//         System.out.println("CSRF header: " + token.getResponseBody().headerName());
+//         System.out.println("CSRF cookies: " + token.getResponseCookies());
+
+         return token;
+    }
+
+//    @Test
+//    void test() {
+//        var token = getCsrfToken();
+//    }
+
     @Test
     void LoginRegisterMeLogoutFlow() {
+         var csrfResult = getCsrfToken();
+         CsrfDTO csrfBody = csrfResult.getResponseBody();
+         String cookie = csrfResult.getResponseCookies().getFirst("XSRF-TOKEN").getValue();
         // REGISTER
+
         var registerResult = client.post()
                 .uri("/auth/register")
+                .cookie("XSRF-TOKEN", cookie)
+                .header(csrfBody.headerName(), csrfBody.token())
                 .body(new CreateUserRequest(
                         "john",
                         "doe",
@@ -46,6 +71,8 @@ public class AuthIntegrationTest {
 
         var loginResult = client.post()
                 .uri("auth/login")
+                .cookie("XSRF-TOKEN", cookie)
+                .header(csrfBody.headerName(), csrfBody.token())
                 .body(new LoginRequest(
                         "test@example.com",
                         "password123"
@@ -62,6 +89,8 @@ public class AuthIntegrationTest {
         // GET CURRENT USER
         var meResult = client.get()
                 .uri("/users/me")
+                .cookie("XSRF-TOKEN", cookie)
+                .header(csrfBody.headerName(), csrfBody.token())
                 .cookie("JSESSIONID", sessionCookie.getValue())
                 .exchange()
                 .returnResult(UserDTO.class);
@@ -71,6 +100,5 @@ public class AuthIntegrationTest {
         System.out.println(currentUser);
         assertEquals("test@example.com", currentUser.email());
     }
-
 
 }
