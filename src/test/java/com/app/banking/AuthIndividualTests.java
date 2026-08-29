@@ -45,7 +45,7 @@ public class AuthIndividualTests {
                 ))
                 .exchange()
                 .returnResult(UserDTO.class);
-        assertEquals(HttpStatus.UNAUTHORIZED, result.getStatus());
+        assertEquals(HttpStatus.FORBIDDEN, result.getStatus());
     }
 
     @Test
