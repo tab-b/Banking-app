@@ -16,8 +16,8 @@ public record UserDTO(
     public static UserDTO from(AppUser user) {
         return new UserDTO(
                 user.getId(),
-                user.getfName(),
-                user.getlName(),
+                user.getfirstName(),
+                user.getlastName(),
                 user.getEmail(),
                 user.getRoles(),
                 user.getCreatedAt()

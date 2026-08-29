@@ -46,6 +46,6 @@ public class AccountController {
 
     @GetMapping("/{accountNumber}")
     public AccountDTO getAccount(@PathVariable String accountNumber) {
-        return AccountDTO.from(accountService.getAccount(accountNumber));
+        return AccountDTO.from(accountService.getCurrentUserAccount(accountNumber));
     }
 }
