@@ -4,7 +4,9 @@ import com.app.banking.dto.TransferRequest;
 import com.app.banking.model.Transaction;
 import com.app.banking.repositories.TransactionRepository;
 import com.app.banking.services.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +23,7 @@ public class TransactionController {
     }
 
     public ResponseEntity<Void> transfer(
-            @RequestParam TransferRequest request) {
+            @Valid @RequestBody TransferRequest request) {
         tranService.transfer(request);
         return ResponseEntity.ok().build();
     }

@@ -73,4 +73,13 @@ public class GlobalExceptionHandler {
                 .body("The data was updated by another user. Please refresh and try again.");
     }
 
+    @ExceptionHandler(IdempotencyKeyReuseException.class)
+    public ResponseEntity<ErrorResponse> handleIdempotencyKeyReuse(IdempotencyKeyReuseException exception) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
 }

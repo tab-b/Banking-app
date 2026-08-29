@@ -15,29 +15,35 @@ public class Transaction {
     @Column(nullable = false, unique = true, updatable = false)
     private UUID transactionId;
 
-    @Column(nullable = false)
-    private String fromId;
+    @Column(nullable = false, updatable = false)
+    private String fromAccountNum;
 
-    @Column(nullable = false)
-    private String toId;
+    @Column(nullable = false, updatable = false)
+    private String toAccountNum;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private BigDecimal amount;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false)
     private TransactionType type;
 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime timestamp;
+
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID idempotencyKey;
 
     protected Transaction() {}
 
-    public Transaction(UUID transactionId, String fromId, String toId, BigDecimal amount, TransactionType type) {
+    public Transaction(UUID transactionId, UUID idempotencyKey, String fromId, String toId, BigDecimal amount, TransactionType type) {
         this.transactionId = transactionId;
-        this.fromId = fromId;
-        this.toId = toId;
+        this.fromAccountNum = fromId;
+        this.toAccountNum = toId;
         this.amount = amount;
         this.type = type;
         this.timestamp = LocalDateTime.now();
+        this.idempotencyKey = idempotencyKey;
     }
 
     public Long getId() {
@@ -48,12 +54,12 @@ public class Transaction {
         return transactionId;
     }
 
-    public String getFromId() {
-        return fromId;
+    public String getFromAccountNum() {
+        return fromAccountNum;
     }
 
-    public String getToId() {
-        return toId;
+    public String getToAccountNum() {
+        return toAccountNum;
     }
 
     public BigDecimal getAmount() {
@@ -66,5 +72,13 @@ public class Transaction {
 
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public UUID getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(UUID idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
     }
 }
