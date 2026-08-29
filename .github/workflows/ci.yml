@@ -44,6 +44,6 @@ jobs:
         run: ./mvnw test
         env:
           SPRING_PROFILES_ACTIVE: test
-          DB_URL: jdbc:postgresql://localhost:5432/banking_test
-          DB_USERNAME: banking
-          DB_PASSWORD: banking_test_password
+          TEST_DB_URL: jdbc:postgresql://localhost:5432/banking_test
+          TEST_DB_USERNAME: banking
+          TEST_DB_PASSWORD: banking_test_password
