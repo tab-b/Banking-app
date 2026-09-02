@@ -1,4 +1,4 @@
-# Banking App
+# Banking App (WIP)
 
 A Spring Boot banking application built to practice backend engineering, system design, security, and production-oriented development patterns.
 
