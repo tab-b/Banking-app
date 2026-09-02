@@ -68,7 +68,6 @@ public class AuthIntegrationTest {
         //
 
         // LOGIN
-
         var loginResult = client.post()
                 .uri("auth/login")
                 .cookie("XSRF-TOKEN", cookie)
@@ -81,17 +80,19 @@ public class AuthIntegrationTest {
                 .returnResult(String.class);
         assertEquals(HttpStatus.OK, loginResult.getStatus());
         System.out.println(loginResult.getResponseBody());
-        var sessionCookie = loginResult.getResponseCookies().getFirst("JSESSIONID");
+        System.out.println(loginResult.getResponseCookies());
+        var sessionCookie = loginResult.getResponseCookies().getFirst("SESSION");
+        System.out.println("SESSION ID: " + sessionCookie);
         assertNotNull(sessionCookie);
 
         //
 
         // GET CURRENT USER
         var meResult = client.get()
-                .uri("/users/me")
+                .uri("/api/users/me")
                 .cookie("XSRF-TOKEN", cookie)
                 .header(csrfBody.headerName(), csrfBody.token())
-                .cookie("JSESSIONID", sessionCookie.getValue())
+                .cookie("SESSION", sessionCookie.getValue())
                 .exchange()
                 .returnResult(UserDTO.class);
         assertEquals(HttpStatus.OK, meResult.getStatus());
