@@ -1,6 +1,5 @@
 package com.app.banking.exceptions;
 
-import com.app.banking.services.EmailAlreadyExists;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +79,15 @@ public class GlobalExceptionHandler {
                 exception.getMessage()
         );
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleRateLimitExceeded(RateLimitExceededException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.TOO_MANY_REQUESTS.value(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.TOO_MANY_REQUESTS);
     }
 
 }

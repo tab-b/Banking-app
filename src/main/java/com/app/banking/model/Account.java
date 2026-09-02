@@ -24,9 +24,8 @@ public class Account {
     @Column(nullable = false)
     private Status status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private AppUser owner;
+    @Column(nullable = false, updatable = false)
+    private Long ownerId;
 
     @Column(nullable = false)
     private LocalDate openingDate;
@@ -41,11 +40,11 @@ public class Account {
 
     protected Account() {}
 
-    public Account(AccountType type, String accountNumber, AppUser owner) {
+    public Account(AccountType type, String accountNumber, Long ownerId) {
         this.balance = BigDecimal.ZERO;
         this.type = type;
         this.accountNumber = accountNumber;
-        this.owner = owner;
+        this.ownerId = ownerId;
         status = Status.ACTIVE;
         openingDate = LocalDate.now();
 
@@ -75,8 +74,8 @@ public class Account {
         return status == Status.ACTIVE;
     }
 
-    public AppUser getOwner() {
-        return owner;
+    public Long getOwnerId() {
+        return ownerId;
     }
 
     public LocalDate getOpeningDate() {

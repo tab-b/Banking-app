@@ -1,11 +1,15 @@
 package com.app.banking.services;
 
+import com.app.banking.dto.AccountDTO;
 import com.app.banking.dto.CreateAccountRequest;
 import com.app.banking.exceptions.AccountNotFoundException;
 import com.app.banking.model.Account;
 import com.app.banking.model.AppUser;
 import com.app.banking.repositories.AccountRepository;
+import com.app.banking.security.CustomUserDetails;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,28 +29,35 @@ public class AccountService {
     }
 
     public Account createAccount(CreateAccountRequest request) {
-        AppUser currentUser = userService.getCurrentUser();
+        Long currentUserId = userService.getCurrentUser().getId();
         String accountNumber = accountNumberServ.generateUnique();
         Account account = new Account(
                 request.type(),
                 accountNumber,
-                currentUser
+                currentUserId
         );
-
-        currentUser.addAccount(account);
         return accountRepo.save(account);
     }
 
     @PreAuthorize("isAuthenticated()")
-    public List<Account> getAccountsForCurrentUser() {
-        AppUser currentUser = userService.getCurrentUser();
-        return accountRepo.findByOwner(currentUser);
+    public List<Account> getAccountEntitiesForCurrentUser(Long currentUserId) {
+        return accountRepo.findByOwnerId(currentUserId);
+    }
+
+    @Cacheable(
+            value = "userAccounts",
+            key = "#root.principal.id"
+    )
+    public List<AccountDTO> getAccountsDTOForCurrentUser(Long currentUserId) {
+        return accountRepo.findByOwnerId(currentUserId)
+                .stream()
+                .map(AccountDTO::from)
+                .toList();
     }
 
     @PreAuthorize("isAuthenticated()")
-    public Account getCurrentUserAccount(String accNum) {
-        AppUser currentUser = userService.getCurrentUser();
-        return accountRepo.findByAccountNumberAndOwner(accNum, currentUser).orElseThrow(() -> new AccountNotFoundException(accNum));
+    public Account getCurrentUserAccount(Long currentUserId, String accNum) {
+        return accountRepo.findByAccountNumberAndOwnerId(accNum, currentUserId).orElseThrow(() -> new AccountNotFoundException(accNum));
     }
 
     public Account getAccountByNumber(String accountNumber) {

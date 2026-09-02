@@ -3,6 +3,7 @@ package com.app.banking.controllers;
 import com.app.banking.dto.UserDTO;
 import com.app.banking.model.AppUser;
 import com.app.banking.services.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -15,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService userServ;
     private final SecurityContextRepository securityContextRepository;
@@ -28,7 +29,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public UserDTO getCurrentUserDetails() {
-        return UserDTO.from(userServ.getCurrentUser());
+    public ResponseEntity<UserDTO> getCurrentUserDetails() {
+//        return UserDTO.from(userServ.getCurrentUser());
+        return ResponseEntity.ok(UserDTO.from(userServ.getCurrentUser()));
     }
 }

@@ -37,17 +37,13 @@ public class AppUser {
     @Column(nullable = false)
     private String passwordHash;
 
-    @OneToMany(mappedBy = "owner")
-    private List<Account> accounts = new ArrayList<>();
-
-    public AppUser(String fName, String lName, String email, Set<String> roles, String passwordHash, List<Account> accounts) {
+    public AppUser(String fName, String lName, String email, Set<String> roles, String passwordHash) {
         this.fName = fName;
         this.lName = lName;
         this.email = email;
         this.roles = roles;
         this.createdAt = Instant.now();
         this.passwordHash = passwordHash;
-        this.accounts = accounts;
     }
 
     protected AppUser() {
@@ -69,9 +65,9 @@ public class AppUser {
         this.email = email;
     }
 
-    public void addAccount(Account acc) {
-        accounts.add(acc);
-    }
+//    public void addAccount(Account acc) {
+//        accounts.add(acc);
+//    }
 
     public Long getId() {return id;}
 

@@ -1,4 +1,4 @@
-package com.app.banking.services;
+package com.app.banking.exceptions;
 
 public class EmailAlreadyExists extends RuntimeException {
     public EmailAlreadyExists(String message) {

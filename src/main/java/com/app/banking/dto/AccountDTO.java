@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 public record AccountDTO(
     AccountType type,
+    Long id,
     String accountNumber,
     Status status,
     LocalDate openingDate,
@@ -19,6 +20,7 @@ public record AccountDTO(
     public static AccountDTO from(Account account) {
         return new AccountDTO(
                 account.getType(),
+                account.getId(),
                 account.getAccountNumber(),
                 account.getStatus(),
                 account.getOpeningDate(),

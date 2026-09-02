@@ -3,6 +3,7 @@ package com.app.banking.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class Transaction {
     private TransactionType type;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime timestamp;
+    private Instant timestamp;
 
     @Column(nullable = false, unique = true, updatable = false)
     private UUID idempotencyKey;
@@ -42,7 +43,7 @@ public class Transaction {
         this.toAccountNum = toId;
         this.amount = amount;
         this.type = type;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = Instant.now();
         this.idempotencyKey = idempotencyKey;
     }
 
@@ -70,7 +71,7 @@ public class Transaction {
         return type;
     }
 
-    public LocalDateTime getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
