@@ -10,7 +10,7 @@ The purpose of this project is to gain hands-on experience with:
 - REST API design
 - PostgreSQL and database design
 - Docker and containerization
-- CI/CD with GitHub Actions
+- CI/CD with GitHub Actions (& future cloud service)
 - Exception handling and API error responses
 - Authentication and authorization
     - Session-based authentication
