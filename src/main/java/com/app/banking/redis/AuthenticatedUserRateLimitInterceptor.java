@@ -13,11 +13,11 @@ import java.time.Duration;
 
 @Component
 public class AuthenticatedUserRateLimitInterceptor implements HandlerInterceptor {
-    private final RedisRateLimiter redisTemplate;
+    private final RedisRateLimiter redisRateLimiter;
     private static final int MAX_REQUESTS_PER_MIN = 30;
 
     public AuthenticatedUserRateLimitInterceptor(RedisRateLimiter redisTemplate) {
-        this.redisTemplate = redisTemplate;
+        this.redisRateLimiter = redisTemplate;
     }
 
     // Check rates of authenticated user
@@ -33,7 +33,7 @@ public class AuthenticatedUserRateLimitInterceptor implements HandlerInterceptor
         Long userId = principal.getId();
         String key = "ratelimit:user:" + userId;
 
-        boolean allowed = redisTemplate.isAllowed(key, MAX_REQUESTS_PER_MIN, Duration.ofMinutes(1));
+        boolean allowed = redisRateLimiter.isAllowed(key, MAX_REQUESTS_PER_MIN, Duration.ofMinutes(1));
 
         if(allowed == false) {
             response.setStatus(429); // too many requests

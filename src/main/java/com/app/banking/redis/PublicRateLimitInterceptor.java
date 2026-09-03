@@ -2,10 +2,13 @@ package com.app.banking.redis;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.time.Duration;
 
+@Component
 public class PublicRateLimitInterceptor implements HandlerInterceptor {
     private final RedisRateLimiter rateLimiter;
     private Long maxRequests = 20L;

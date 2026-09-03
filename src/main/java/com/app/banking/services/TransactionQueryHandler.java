@@ -30,7 +30,7 @@ public class TransactionQueryHandler {
                     u.last_name AS receiver_last_name
                 FROM transaction t
                 LEFT JOIN account a ON t.to_account_num = a.account_number
-                LEFT JOIN users u ON a.account_number = u.owner_id
+                LEFT JOIN users u ON a.owner_id = u.owner_id
                 WHERE t.from_account = ?
                 ORDER BY t.timestamp DESC
                 LIMIT ?

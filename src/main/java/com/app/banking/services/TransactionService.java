@@ -25,28 +25,34 @@ public class TransactionService {
         this.accountService = accountService;
     }
 
-    public void validateTransfer(TransferRequest transfer) {
-        Optional<Transaction> existing = tranRepo.findByIdempotencyKey(transfer.idempotencyKey());
-        if(existing.isPresent()) {
-            Transaction existingTransaction = existing.get();
-            if(existingTransaction.getFromAccountNum().equals(transfer.fromAccountNumber()) == false ||
-                    existingTransaction.getToAccountNum().equals(transfer.toAccountNumber()) == false) {
-                throw new IdempotencyKeyReuseException();
-            }
+    public Optional<Transaction> findExistingTransaction(TransferRequest request) {
+        Optional<Transaction> existing = tranRepo.findByIdempotencyKey(request.idempotencyKey());
+        if(existing.isEmpty()) return Optional.empty();
+
+        Transaction transaction = existing.get();
+        boolean sameRequest =
+                transaction.getFromAccountNum().equals(request.fromAccountNumber()) &&
+                        transaction.getToAccountNum().equals(request.toAccountNumber()) &&
+                        transaction.getAmount().abs().compareTo(request.amount()) == 0;
+
+        if(sameRequest == false) {
+            throw new IdempotencyKeyReuseException();
         }
+        return Optional.of(transaction);
     }
 
     @Transactional
     public Transaction transfer(TransferRequest transaction, Long currentUserId) {
-        validateTransfer(transaction);
+        Optional<Transaction> existingTransfer =  findExistingTransaction(transaction);
+        if(existingTransfer.isPresent()) return existingTransfer.get();
 
         BigDecimal amount = transaction.amount();
         String fromAccountNumber = transaction.fromAccountNumber();
         String toAccountNumber = transaction.toAccountNumber();
 
-
-        if(amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidTransferException("Amount cannot be less than or equal to zero!");
         if(fromAccountNumber.equals(toAccountNumber)) throw new InvalidTransferException("Cannot transfer to the same account!");
+        if(amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidTransferException("Amount cannot be less than or equal to zero!");
+
         Account from = accountService.getCurrentUserAccount(currentUserId, fromAccountNumber);
         Account to = accountService.getAccountByNumber(toAccountNumber);
 
@@ -65,7 +71,7 @@ public class TransactionService {
 
         // Record transactions
         UUID transactionID = UUID.randomUUID();
-        Transaction transferRecord = new Transaction(transactionID, transaction.idempotencyKey(), fromAccountNumber, toAccountNumber, amount.negate(), TransactionType.TRANSFER);
+        Transaction transferRecord = new Transaction(transactionID, transaction.idempotencyKey(), fromAccountNumber, toAccountNumber, amount, TransactionType.TRANSFER);
 //        Transaction toTransaction = new Transaction(transactionID, transaction.idempotencyKey(), fromAccountNumber, toAccountNumber, amount, TransactionType.TRANSFER);
         tranRepo.save(transferRecord);
 

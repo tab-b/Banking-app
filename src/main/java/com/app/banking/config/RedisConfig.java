@@ -3,9 +3,11 @@ package com.app.banking.config;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
@@ -26,6 +28,14 @@ public class RedisConfig {
                 .cacheDefaults(defaultConfig)
                 .withCacheConfiguration("userAccounts", defaultConfig.entryTtl(Duration.ofMinutes(5)))
                 .build();
+    }
+
+    @Bean
+    public RedisScript<Long> rateLimitScript() {
+        return RedisScript.of(
+                new ClassPathResource("scripts/rate-limit.lua"),
+                Long.class
+        );
     }
 }
 

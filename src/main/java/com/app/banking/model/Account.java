@@ -126,4 +126,12 @@ public class Account {
     public void setVersion(Long version) {
         this.version = version;
     }
+
+    /**
+     * Should be used for testing only
+     * @param amount desired balance amount
+     */
+    public void setBalance(BigDecimal amount) {
+        balance = amount;
+    }
 }

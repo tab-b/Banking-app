@@ -23,7 +23,7 @@ The purpose of this project is to gain hands-on experience with:
     - Database transactions and atomicity
     - Idempotency
     - Concurrency control
-    - Optimistic and pessimistic locking
+    - Optimistic locking
 - Application architecture
     - MVC
     - CQRS (Command Query Responsibility Segregation)
