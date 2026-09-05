@@ -19,10 +19,17 @@ public class RedisConfig {
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(1)); // Normal data lives for 1 hour
-        // do NOT call .disableCachingNullValues() here.
-        // allowing nulls protects against Cache Penetration.
+        GenericJacksonJsonRedisSerializer serializer =
+                GenericJacksonJsonRedisSerializer.builder()
+                        .build();
+
+        RedisCacheConfiguration defaultConfig =
+                RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(1)) // Normal data lives for 1 hour
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair
+                                .fromSerializer(serializer)
+                );
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultConfig)

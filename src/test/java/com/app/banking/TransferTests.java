@@ -2,6 +2,7 @@ package com.app.banking;
 
 import com.app.banking.dto.TransferRequest;
 import com.app.banking.exceptions.IdempotencyKeyReuseException;
+import com.app.banking.exceptions.InsufficientFundsException;
 import com.app.banking.model.Account;
 import com.app.banking.model.AccountType;
 import com.app.banking.model.AppUser;
@@ -137,6 +138,20 @@ public class TransferTests {
         userRepository.deleteAll();
 
         setupData();
+    }
+
+    @Test
+    @WithMockUser(username = "test@gmail.com")
+    void insufficientFundsShouldThrow() {
+        UUID key = UUID.randomUUID();
+        TransferRequest request = new TransferRequest(
+                checking.getAccountNumber(),
+                recipient.getAccountNumber(),
+                new BigDecimal("2000.00"),
+                key
+        );
+        assertThrows(InsufficientFundsException.class, () -> transactionService.transfer(request, user.getId()));
+
     }
 
     // same key + same request

@@ -33,9 +33,7 @@ public class AccountController {
     @PostMapping("/create-account")
     @PreAuthorize("hasRole('USER')")
     public AccountDTO createAccount(@Valid @RequestBody CreateAccountRequest request) {
-        return AccountDTO.from(
-                accountService.createAccount(request)
-        );
+        return AccountDTO.from(accountService.createAccount(request));
     }
 
     @GetMapping
@@ -44,8 +42,8 @@ public class AccountController {
     }
 
     @GetMapping("/{accountNumber}")
-    public AccountDTO getAccount(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable String accountNumber) {
-        return AccountDTO.from(accountService.getCurrentUserAccount(currentUser.getId(), accountNumber));
+    public ResponseEntity<AccountDTO> getAccount(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable String accountNumber) {
+        return ResponseEntity.ok(AccountDTO.from(accountService.getCurrentUserAccount(currentUser.getId(), accountNumber)));
     }
 
 }

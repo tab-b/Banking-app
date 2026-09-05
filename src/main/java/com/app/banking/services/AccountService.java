@@ -46,7 +46,7 @@ public class AccountService {
 
     @Cacheable(
             value = "userAccounts",
-            key = "#root.principal.id"
+            key = "#currentUserId"
     )
     public List<AccountDTO> getAccountsDTOForCurrentUser(Long currentUserId) {
         return accountRepo.findByOwnerId(currentUserId)

@@ -1,5 +1,6 @@
-package com.app.banking;
+package com.app.banking.authentication;
 
+import com.app.banking.CsrfDTO;
 import com.app.banking.dto.CreateUserRequest;
 import com.app.banking.dto.LoginRequest;
 import com.app.banking.dto.UserDTO;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.EntityExchangeResult;
 import org.springframework.test.web.servlet.client.RestTestClient;

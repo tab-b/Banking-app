@@ -1,5 +1,6 @@
-package com.app.banking;
+package com.app.banking.authentication;
 
+import com.app.banking.CsrfDTO;
 import com.app.banking.dto.CreateUserRequest;
 import com.app.banking.dto.UserDTO;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureRestTestClient
 @ActiveProfiles("test")
 public class AuthIndividualTests {
+
     @Autowired
     private RestTestClient client;
 
