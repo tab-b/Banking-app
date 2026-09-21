@@ -27,10 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -354,5 +351,84 @@ public class TransferTests {
         assertEquals(1, transactionRepository.count());
 
         assertTrue(transactionRepository.findByIdempotencyKey(key).isPresent());
+    }
+
+    @Test
+    void shouldHandle100ConcurrentTransfers() throws Exception {
+        int numberOfThreads = 100;
+        BigDecimal transferAmount = new BigDecimal("10.00");
+
+        // Starting balances
+        checking.setBalance(new BigDecimal("10000.00"));
+        recipient.setBalance(BigDecimal.ZERO);
+
+        accountRepository.saveAndFlush(checking);
+        accountRepository.saveAndFlush(recipient);
+
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+
+        CountDownLatch ready = new CountDownLatch(numberOfThreads);
+        CountDownLatch start = new CountDownLatch(1);
+        CountDownLatch done = new CountDownLatch(numberOfThreads);
+
+        List<Throwable> failures = new CopyOnWriteArrayList<>();
+
+        for(int i = 0; i < numberOfThreads; i++) {
+            executor.submit(() -> {
+                try {
+                    // Tell test: "this thread is ready"
+                    ready.countDown();
+
+                    // All threads wait here
+                    start.await();
+
+                    TransferRequest request = new TransferRequest(
+                            checking.getAccountNumber(),
+                            recipient.getAccountNumber(),
+                            transferAmount,
+                            UUID.randomUUID()
+                    );
+
+                    transactionService.transfer(request, user.getId());
+
+                } catch(Throwable e) {
+                    failures.add(e);
+                } finally {
+                    done.countDown();
+                }
+            });
+        }
+
+        // Wait until all 100 threads reach ready.countDown()
+        assertTrue(ready.await(10, TimeUnit.SECONDS));
+
+        // BOOM — release all 100 at once
+        start.countDown();
+
+        // Wait until they're finished
+        assertTrue(done.await(30, TimeUnit.SECONDS));
+
+        executor.shutdown();
+
+        assertTrue(failures.isEmpty(), () ->
+                "Failures: " + failures
+        );
+
+        // IMPORTANT: reload from DB
+        Account updatedChecking =
+                accountRepository.findById(checking.getId()).orElseThrow();
+
+        Account updatedRecipient =
+                accountRepository.findById(recipient.getId()).orElseThrow();
+
+        assertEquals(
+                new BigDecimal("9000.00"),
+                updatedChecking.getBalance()
+        );
+
+        assertEquals(
+                new BigDecimal("1000.00"),
+                updatedRecipient.getBalance()
+        );
     }
 }
